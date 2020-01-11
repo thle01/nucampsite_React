@@ -9,6 +9,10 @@ class Directory extends Component {
             selectedCampsite: null
         };
     }
+
+    onCampsiteSelect(campsite) {
+        this.setState({ selectedCampsite: campsite });
+    }
    
     render() {
         const directory = this.props.campsites.map(campsite => {
@@ -32,9 +36,7 @@ class Directory extends Component {
         );
     }
 
-    onCampsiteSelect(campsite) {
-        this.setState({ selectedCampsite: campsite });
-    }
+    
 
 }
 
