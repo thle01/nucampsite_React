@@ -1,15 +1,16 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl'
 
-export const addComments = (campsiteId, rating, author, text) => ({
-    type: ActionTypes.ADD_COMMENT,
-    payload: {
-        campsiteId: campsiteId,
-        rating: rating,
-        author: author,
-        text: text
-    }
+export const addComments = (comments) => ({
+    type: ActionTypes.ADD_COMMENTS,
+    payload: comments
 });
+
+export const addComment = (comment) => ({
+    type: ActionTypes.ADD_COMMENT,
+    payload: comment
+});
+
 
 export const fetchCampsites = () => dispatch => {
     dispatch(campsitesLoading());
@@ -140,7 +141,7 @@ export const postComment = (campsiteId, rating, author, text) => (dispatch) => {
             error => { throw error; }
         )
         .then(response => response.json())
-        .then(response => dispatch(addComments(response)))
+        .then(response => dispatch(addComment(response)))
         .catch(error => {
             console.log('post comment', error.message);
             alert('Your comment could not be posted\nError: ' + error.message);
