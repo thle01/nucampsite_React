@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Col, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
-
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 const required = val => val && val.length;
 const minLength = len => val => val && (val.length >= len);
@@ -28,8 +28,8 @@ class CommentForm extends Component {
     }
 
     handleSubmit(values) {
-        console.log("Current state is: " + JSON.stringify(values));
-        alert("Current state is: " + JSON.stringify(values));
+        this.toggleModal();
+        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text)
     }
 
     render() {
@@ -44,7 +44,7 @@ class CommentForm extends Component {
                     <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
                     <ModalBody>
                         <LocalForm onSubmit={values => this.handleSubmit(values)}>
-                            <div class="form-group">
+                            <div className="form-group">
                                 <Label htmlFor="rating" md={2}>Rating</Label>
                                 <Col md={10}>
                                     <Control.select
@@ -60,7 +60,7 @@ class CommentForm extends Component {
                                     </Control.select>
                                 </Col>
                             </div>
-                            <div class="form-group">
+                            <div className="form-group">
                                 <Label htmlFor="author" md={3}> Your name</Label>
                                 <Col md={10}>
                                     <Control.text model=".author" id="author" name="author"
@@ -85,7 +85,7 @@ class CommentForm extends Component {
                                     />
                                 </Col>
                             </div>
-                            <div class="form-group">
+                            <div className="form-group">
                                 <Label htmlFor="text" md={2}>Comment</Label>
                                 <Col md={10}>
                                     <Control.textarea model=".text" id="text" name="text"
@@ -94,7 +94,7 @@ class CommentForm extends Component {
                                     />
                                 </Col>
                             </div>
-                            <div class="form-group">
+                            <div className="form-group">
                                 <Col md={10}>
                                     <Button type="submit" value="submit" color="primary"> Submit</Button>
                                 </Col>
@@ -120,7 +120,7 @@ function RenderCampsite({ campsite }) {
     );
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, campsiteId }) {
     if (comments) {
         return (
             <div className="col-md-5 m-1">
@@ -128,14 +128,14 @@ function RenderComments({ comments }) {
                 {comments.map(comment => {
                     return (
                         <div key={comment.id}>
-                            <p> {comment.text}
-                                {comment.author}
+                            <p> {comment.text} <br />
+                                -- {comment.author}
                                 {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}
                             </p>
                         </div>
                     );
                 })}
-                <CommentForm />
+                <CommentForm campsiteId={campsiteId} addComment={addComment} />
             </div>
         );
     }
@@ -143,6 +143,29 @@ function RenderComments({ comments }) {
 }
 
 function CampsiteInfo(props) {
+
+    if (props.isLoading) {
+        return (
+            <div className='container'>
+                <div className='row'>
+                    <Loading />
+                </div>
+            </div>
+        );
+    }
+
+    if (props.errMess) {
+        return (
+            <div className='container'>
+                <div className='row'>
+                    <div className='col'>
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (props.campsite) {
         return (
             <div className="container">
@@ -158,7 +181,11 @@ function CampsiteInfo(props) {
                 </div>
                 <div className="row">
                     <RenderCampsite campsite={props.campsite} />
-                    <RenderComments comments={props.comments} />
+                    <RenderComments
+                        comments={props.comments}
+                        addComment={props.addComment}
+                        campsiteId={props.campsite.id}
+                    />
                 </div>
             </div>
         );
