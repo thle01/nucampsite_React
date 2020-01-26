@@ -1,12 +1,11 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import {Loading } from './LoadingComponent';
+import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import { Fade, Stagger } from 'react-animation-components';
 
 function PartnerList(props) {
-    
-    
 
     if (props.partners.isLoading) {
         return (
@@ -32,9 +31,11 @@ function PartnerList(props) {
 
     const partners = props.partners.partners.map(partner => {
         return (
-            <Media tag="li" key={partner.id}>
-                <RenderPartner partner={partner}/>
-            </Media>
+            <Fade in key={partner.id}>
+                <Media tag="li" key={partner.id}>
+                    <RenderPartner partner={partner} />
+                </Media>
+            </Fade>
         );
     });
 
@@ -43,7 +44,9 @@ function PartnerList(props) {
             <div className='row'>
                 <div className='col mt-4'>
                     <Media list>
-                        {partners}
+                        <Stagger in>
+                            {partners}
+                        </Stagger>
                     </Media>
                 </div>
             </div>
@@ -52,18 +55,18 @@ function PartnerList(props) {
 
 }
 
-function RenderPartner({partner}) {
+function RenderPartner({ partner }) {
     if (partner) {
         return (
-        <React.Fragment>
-            <Media object src={baseUrl + partner.image} alt={partner.name} width="150" />
-            <Media body className='ml-5 mb-4'>
-                <Media heading>
-                    {partner.name}
+            <React.Fragment>
+                <Media object src={baseUrl + partner.image} alt={partner.name} width="150" />
+                <Media body className='ml-5 mb-4'>
+                    <Media heading>
+                        {partner.name}
+                    </Media>
+                    {partner.description}
                 </Media>
-                {partner.description}
-            </Media>
-        </React.Fragment>
+            </React.Fragment>
         );
     }
     return <div />;
@@ -122,8 +125,8 @@ function About(props) {
             <div className="row row-content">
                 <div className="col-12">
                     <h3>Community Partners</h3>
-                </div> 
-                <PartnerList partners={props.partners}/>
+                </div>
+                <PartnerList partners={props.partners} />
             </div>
         </div>
     );
